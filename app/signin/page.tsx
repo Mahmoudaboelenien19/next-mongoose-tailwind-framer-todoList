@@ -1,5 +1,5 @@
 import React from "react";
-import Form from "../(site)/components/login/Form";
+import Form from "../(site)/components/signin/Form";
 import Container from "../(site)/components/nav/(shared)/Container";
 
 const Login = () => {

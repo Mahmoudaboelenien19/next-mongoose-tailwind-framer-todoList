@@ -7,10 +7,10 @@ const deleteTodo = async (id: string, todoId: string) => {
     method: "DELETE",
   });
   if (res.status === 200) {
-    await revalidateALlTodos();
+    // await revalidateALlTodos();
+    return await res.json();
   }
-
-  return await res.json();
+  return;
 };
 
 export default deleteTodo;

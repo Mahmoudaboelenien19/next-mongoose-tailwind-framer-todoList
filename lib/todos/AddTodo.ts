@@ -9,9 +9,10 @@ const AddTodo = async (id: string, todo: TodoType) => {
   });
 
   if (res.status === 200) {
-    await revalidateALlTodos();
+    // await revalidateALlTodos();
+    return await res.json();
   }
-  return await res.json();
+  return;
 };
 
 export default AddTodo;

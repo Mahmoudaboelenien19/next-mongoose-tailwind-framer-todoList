@@ -1,15 +1,22 @@
 "use client";
 import deleteTodo from "@/lib/todos/deleteToDo";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { AiFillDelete, AiFillCheckCircle } from "react-icons/ai";
 import { HiPencilAlt } from "react-icons/hi";
+import { toast } from "sonner";
 
 type Props = { _id: string };
 const Buttons = ({ _id }: Props) => {
   const router = useRouter();
   const handleDelete = async () => {
-    const res = await deleteTodo("652dc832a357b0fc4b93d5d7", _id);
+    const res = deleteTodo("652dc832a357b0fc4b93d5d7", _id);
+    toast.promise(res, {
+      loading: "Loading...",
+      success: (data: { msg: string }) => {
+        return `${data.msg} `;
+      },
+      error: "Error",
+    });
     router.refresh();
   };
   return (
@@ -22,9 +29,3 @@ const Buttons = ({ _id }: Props) => {
 };
 
 export default Buttons;
-
-/* 
-i can import client com inside server component and still server
-
-
-*/

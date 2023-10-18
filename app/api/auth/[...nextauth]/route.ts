@@ -7,12 +7,12 @@ import { Adapter } from "next-auth/adapters";
 const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.Google_Client_ID ?? "",
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: "/signin",
   },
 
   adapter: MongoDBAdapter(clientPromise) as Adapter,

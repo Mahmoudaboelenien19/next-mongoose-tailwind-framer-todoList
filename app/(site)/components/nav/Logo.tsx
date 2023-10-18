@@ -5,7 +5,7 @@ import Image from "next/image";
 const Logo = () => {
   return (
     <Link href={"/"}>
-      <div className="h-8 w-32 overflow-hidden relative">
+      <div className="h-8 w-32 overflow-hidden relative -translate-x-10">
         <Image
           src={logo}
           alt="todo"

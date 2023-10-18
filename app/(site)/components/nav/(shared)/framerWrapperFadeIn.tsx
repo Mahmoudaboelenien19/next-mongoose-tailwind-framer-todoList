@@ -10,7 +10,7 @@ type Props = {
 } & ChildrenType;
 const FramerWrapperFadeIn = ({ children, i, className, _id }: Props) => {
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       <motion.div
         layout
         initial={{ opacity: 0 }}
