@@ -1,13 +1,10 @@
-import Form from "./(home)/components/Form";
-import Header from "./(home)/components/Header";
-import Tasks from "./(home)/components/Tasks/Tasks";
+import Todo from "./(site)/components/Todo";
+import Container from "./(site)/components/nav/(shared)/Container";
 
 export default function Home() {
   return (
-    <main className="w-[95%] md:w-5/6  lg:max-w-2xl bg-todo h-5/6 sm:max-h-[800px] rounded-md p-8 shadow-md">
-      <Header />
-      <Form />
-      <Tasks />
-    </main>
+    <Container>
+      <Todo />
+    </Container>
   );
 }

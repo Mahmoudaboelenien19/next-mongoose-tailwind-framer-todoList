@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Icon from "@/public/logo.png";
 import "./globals.css";
+import Providers from "./(site)/components/context/auth";
+import SigninButton from "./(site)/components/login/Button";
+import Nav from "./(site)/components/nav/Nav";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -17,9 +19,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={"bg-body w-screen h-screen flex justify-center items-center"}
+        className={
+          "bg-body w-screen h-screen flex  flex-col justify-center items-center"
+        }
       >
-        {children}
+        <Providers>
+          <main>
+            <Nav />
+          </main>
+          <>{children}</>
+        </Providers>
       </body>
     </html>
   );
