@@ -1,8 +1,5 @@
 import mongoose from "mongoose";
 import Adapters from "next-auth/adapters";
-(async () =>
-  await mongoose.connect(process.env.MONGODB_URI as unknown as string))();
-
 const userSchema = new mongoose.Schema({
   name: String,
   email: String,

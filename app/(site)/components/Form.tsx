@@ -1,48 +1,97 @@
 "use client";
 import AddTodo from "@/lib/todos/AddTodo";
+import updateTodo from "@/lib/todos/updateTodo";
 import { TodoType } from "@/lib/types/todo";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import React, { FormEvent, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { toast } from "sonner";
 
 const Form = () => {
   const [err, setErr] = useState({ msg: "", hasError: false });
+  const search = useSearchParams();
+  const updateVal = search.get("update") || "";
+  const todoId = search.get("todoId") || "";
   const router = useRouter();
   const [todo, setTodo] = React.useState<string>("");
   const formRef = useRef<HTMLFormElement>(null);
+  const { data: session } = useSession();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTodo(e.target.value);
     if (err.hasError && e.target.value.length < 25) {
       setErr({ hasError: false, msg: "" });
     }
   };
+  const inpRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (updateVal && inpRef.current) {
+      inpRef.current.value = updateVal;
+      setTodo(updateVal);
+    }
+  }, [updateVal]);
   const addToDoFn = async () => {
+    const email = session?.user?.email;
     const todoObj: TodoType = {
       content: todo || "",
       isChecked: false,
     };
-    if (todoObj?.content !== "" && todoObj?.content.length < 25) {
-      if (err.hasError) {
-        setErr({ ...err, hasError: false });
-      }
-      const res = AddTodo("652dc832a357b0fc4b93d5d7", todoObj);
+    if (email) {
+      if (todoObj?.content !== "" && todoObj?.content.length < 25) {
+        if (err.hasError) {
+          setErr({ ...err, hasError: false });
+        }
+        const res = AddTodo(email, todoObj);
 
-      toast.promise(res, {
-        loading: "Loading...",
-        success: (data: { msg: string }) => {
-          formRef.current?.reset();
-          setTodo("");
-          return `${data.msg} `;
-        },
-        error: "Error",
-      });
-      router.refresh();
-    } else if (todoObj?.content.length >= 25) {
-      setErr({ hasError: true, msg: "you can't exceed 24 letter." });
+        toast.promise(res, {
+          loading: "Loading...",
+          success: (data: { msg: string }) => {
+            formRef.current?.reset();
+            setTodo("");
+            return `${data.msg} `;
+          },
+          error: "Error",
+        });
+        router.refresh();
+      } else if (todoObj?.content.length >= 25) {
+        setErr({ hasError: true, msg: "you can't exceed 24 letter." });
+      } else {
+        setErr({ hasError: true, msg: "add a todo ... !" });
+      }
     } else {
-      setErr({ hasError: true, msg: "add a todo ... !" });
+      setErr({ hasError: true, msg: "you must sign in to add todo ... !" });
+    }
+  };
+
+  const updateTodoFn = async () => {
+    const email = session?.user?.email;
+
+    if (email) {
+      if (todo !== "" && todo.length < 25) {
+        if (err.hasError) {
+          setErr({ ...err, hasError: false });
+        }
+        const res = updateTodo(email, todoId, todo);
+
+        toast.promise(res, {
+          loading: "Loading...",
+          success: (data: { msg: string }) => {
+            formRef.current?.reset();
+            router.push("/");
+            setTodo("");
+            return `${data.msg} `;
+          },
+          error: "Error",
+        });
+        router.refresh();
+      } else if (todo.length >= 25) {
+        setErr({ hasError: true, msg: "you can't exceed 24 letter." });
+      } else {
+        setErr({ hasError: true, msg: "add a todo ... !" });
+      }
+    } else {
+      setErr({ hasError: true, msg: "you must sign in to add todo ... !" });
     }
   };
 
@@ -69,6 +118,7 @@ const Form = () => {
         )}
       </AnimatePresence>
       <input
+        ref={inpRef}
         onChange={handleChange}
         type="text"
         placeholder="What needs to be done "
@@ -76,9 +126,10 @@ const Form = () => {
       />
       <button
         className="bg-body border-0 rounded-r text-white w-1/5 flex gap-1 justify-center items-center font-medium p-2"
-        onClick={addToDoFn}
+        onClick={updateVal ? updateTodoFn : addToDoFn}
       >
-        <span> Add</span> <FiArrowUpRight />
+        <span>{updateVal?.length >= 1 ? "Update" : "Add"}</span>{" "}
+        <FiArrowUpRight />
       </button>
     </form>
   );

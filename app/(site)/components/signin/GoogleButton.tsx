@@ -11,7 +11,8 @@ const GoogleLoginButton = () => {
   };
   return (
     <button
-      className="w-full flex justify-center items-center gap-8 text-white/60 bg-body h-12 p-2 rounded"
+      type="button"
+      className="w-full flex justify-center items-center gap-8 text-white/60 border border-white/50  h-12 p-2 rounded"
       onClick={handleClick}
     >
       <FcGoogle size={24} />

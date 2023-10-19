@@ -1,14 +1,18 @@
 import { apiUrl } from "../url";
 
-export const getAllTodos = async (id: string) => {
-  const res = await fetch(apiUrl + `/todos/${id}`, {
-    next: {
-      // tags: ["getAllTodos"],
+export const getAllTodos = async (email?: string) => {
+  if (email) {
+    const res = await fetch(apiUrl + `/todos/${email}`, {
+      next: {
+        // tags: ["getAllTodos"],
 
-      revalidate: 0,
-    },
-  });
-  if (!res.ok) return;
+        revalidate: 0,
+      },
+    });
+    if (!res.ok) return;
 
-  return res;
+    return res;
+  } else {
+    return null;
+  }
 };
