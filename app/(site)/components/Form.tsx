@@ -2,15 +2,16 @@
 import AddTodo from "@/lib/todos/AddTodo";
 import updateTodo from "@/lib/todos/updateTodo";
 import { TodoType } from "@/lib/types/todo";
-import { AnimatePresence, motion } from "framer-motion";
+
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { toast } from "sonner";
+import ErrorInput from "./nav/(shared)/widgets/ErrorInput";
 
 const Form = () => {
-  const [err, setErr] = useState({ msg: "", hasError: false });
+  const [err, setErr] = useState("");
   const search = useSearchParams();
   const updateVal = search.get("update") || "";
   const todoId = search.get("todoId") || "";
@@ -20,8 +21,8 @@ const Form = () => {
   const { data: session } = useSession();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTodo(e.target.value);
-    if (err.hasError && e.target.value.length < 25) {
-      setErr({ hasError: false, msg: "" });
+    if (err && e.target.value.length < 25) {
+      setErr("");
     }
   };
   const inpRef = useRef<HTMLInputElement>(null);
@@ -39,8 +40,8 @@ const Form = () => {
     };
     if (email) {
       if (todoObj?.content !== "" && todoObj?.content.length < 25) {
-        if (err.hasError) {
-          setErr({ ...err, hasError: false });
+        if (err) {
+          setErr("");
         }
         const res = AddTodo(email, todoObj);
 
@@ -55,12 +56,12 @@ const Form = () => {
         });
         router.refresh();
       } else if (todoObj?.content.length >= 25) {
-        setErr({ hasError: true, msg: "you can't exceed 24 letter." });
+        setErr("you can't exceed 24 letter.");
       } else {
-        setErr({ hasError: true, msg: "add a todo ... !" });
+        setErr("add a todo ... !");
       }
     } else {
-      setErr({ hasError: true, msg: "you must sign in to add todo ... !" });
+      setErr("you must sign in to add todo ... !");
     }
   };
 
@@ -69,8 +70,8 @@ const Form = () => {
 
     if (email) {
       if (todo !== "" && todo.length < 25) {
-        if (err.hasError) {
-          setErr({ ...err, hasError: false });
+        if (err) {
+          setErr("");
         }
         const res = updateTodo(email, todoId, todo);
 
@@ -86,12 +87,12 @@ const Form = () => {
         });
         router.refresh();
       } else if (todo.length >= 25) {
-        setErr({ hasError: true, msg: "you can't exceed 24 letter." });
+        setErr("you can't exceed 24 letter.");
       } else {
-        setErr({ hasError: true, msg: "add a todo ... !" });
+        setErr("add a todo ... !");
       }
     } else {
-      setErr({ hasError: true, msg: "you must sign in to add todo ... !" });
+      setErr("you must sign in to add todo ... !");
     }
   };
 
@@ -104,19 +105,7 @@ const Form = () => {
       onSubmit={handleSUbmit}
       className="w-full h-12 flex justify-between  my-10 mx-auto text-xs md:text-base relative "
     >
-      <AnimatePresence>
-        {err.hasError && (
-          <motion.div
-            key="err"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.5, 1] }}
-            exit={{ opacity: [1, 0.5, 0] }}
-            className="absolute top-[calc(100%_+_5px)]  left-0 w-full h-4  text-center text-red-700  font-semibold "
-          >
-            {err.msg}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ErrorInput err={err} />
       <input
         ref={inpRef}
         onChange={handleChange}

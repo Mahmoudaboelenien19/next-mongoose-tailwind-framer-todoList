@@ -2,7 +2,7 @@ import { getAllTodos } from "@/lib/todos/getAllTodos";
 import Form from "./(site)/components/Form";
 import Header from "./(site)/components/Header";
 import Tasks from "./(site)/components/Tasks/Tasks";
-import Container from "./(site)/components/nav/(shared)/Container";
+import Container from "./(site)/components/nav/(shared)/widgets/Container";
 import { Suspense } from "react";
 import FetchLoading from "./(site)/components/FetchLoading";
 

@@ -11,6 +11,7 @@ const config: Config = {
       colors: {
         todo: "#111100",
         body: "#10303c",
+        mainRed: "#EE7C75",
       },
     },
   },

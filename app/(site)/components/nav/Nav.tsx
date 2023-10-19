@@ -1,5 +1,5 @@
 import React from "react";
-import SigninButton from "../signin/Button";
+import SigninButton from "./Button";
 import Logo from "./Logo";
 
 const Nav = () => {
