@@ -1,10 +1,12 @@
+import bcyrpt from "bcrypt";
 import { userCollection } from "@/lib/mongoose/usersSchema";
 import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions, Session } from "next-auth";
 import { Adapter } from "next-auth/adapters";
 import clientPromise from "../mongoose/mongoAdapter";
 import CredentialsProvider from "next-auth/providers/credentials";
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
@@ -16,13 +18,21 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: { email: { type: "text" }, password: { type: "text" } },
       async authorize(credentials) {
-        console.log(credentials);
-        if (!credentials || credentials?.email || !credentials?.password)
+        if (!credentials || !credentials?.email || !credentials?.password) {
           return null;
+        }
 
         const user = await userCollection.findOne({ email: credentials.email });
-        if (user.length) {
-          return user[0];
+        if (user) {
+          const check = bcyrpt.compareSync(
+            credentials.password + process.env.BCYRPT_SECRET,
+            user.password
+          );
+
+          if (check) {
+            return user;
+          }
+          return null;
         }
 
         return null;
@@ -44,17 +54,34 @@ export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise) as Adapter,
 
   callbacks: {
-    // async signIn({ account, profile, verificationRequest, credentials }: any) {
-    //   if (account.provider === "google") {
-    //     console.log({ credentials });
-    //     const check = await userCollection.find({ email: profile.email });
-    //     console.log({ profile, verificationRequest });
-    //     if (Boolean(check.length)) {
-    //       return true;
+    // async signIn({ account, profile, credentials }) {
+    //   if (account && profile && account.provider === "google") {
+    //     const user = await userCollection.findOne({ email: profile.email });
+    //     console.log({ profile });
+    //     if (user) {
+    //       return user;
     //     }
     //     return "/signin?isRegistered=false";
     //   }
+
+    //   if (credentials && credentials.email) {
+    //     const user = await userCollection.findOne({ email: credentials.email });
+
+    //     if (user) {
+    //       return user;
+    //     }
+    //   }
     //   return "/signin?isRegistered=false";
     // },
+    async session({ session }) {
+      const user = await userCollection.findOne({
+        email: session?.user?.email,
+      });
+      if (user) {
+        session.user.userId = user._id.toString();
+      }
+
+      return await Promise.resolve(session);
+    },
   },
 };

@@ -2,9 +2,9 @@ import { getAllTodos } from "@/lib/todos/getAllTodos";
 import Form from "./(site)/components/Form";
 import Header from "./(site)/components/Header";
 import Tasks from "./(site)/components/Tasks/Tasks";
-import Container from "./(site)/components/nav/(shared)/widgets/Container";
 import { Suspense } from "react";
 import FetchLoading from "./(site)/components/FetchLoading";
+import Container from "./(site)/components/(shared)/widgets/Container";
 
 export default function Home() {
   return (

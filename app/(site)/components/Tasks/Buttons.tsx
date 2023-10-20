@@ -13,7 +13,7 @@ const Buttons = ({ _id, isChecked, content }: Props) => {
 
   const { data: session } = useSession();
   const handleDelete = async () => {
-    const res = deleteTodo(session?.user?.email || "", _id);
+    const res = deleteTodo(session?.user?.userId || "", _id);
     toast.promise(res, {
       loading: "Loading...",
       success: (data: { msg: string }) => {
@@ -25,7 +25,7 @@ const Buttons = ({ _id, isChecked, content }: Props) => {
   };
 
   const handleCheck = async () => {
-    const res = toggleCheck(session?.user?.email || "", _id, !isChecked);
+    const res = toggleCheck(session?.user?.userId || "", _id, !isChecked);
     toast.promise(res, {
       loading: "Loading...",
       success: (data: { msg: string }) => {

@@ -2,13 +2,12 @@
 import AddTodo from "@/lib/todos/AddTodo";
 import updateTodo from "@/lib/todos/updateTodo";
 import { TodoType } from "@/lib/types/todo";
-
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { toast } from "sonner";
-import ErrorInput from "./nav/(shared)/widgets/ErrorInput";
+import ErrorInput from "./(shared)/widgets/ErrorInput";
 
 const Form = () => {
   const [err, setErr] = useState("");
@@ -33,17 +32,17 @@ const Form = () => {
     }
   }, [updateVal]);
   const addToDoFn = async () => {
-    const email = session?.user?.email;
+    const userId = session?.user?.userId;
     const todoObj: TodoType = {
       content: todo || "",
       isChecked: false,
     };
-    if (email) {
+    if (userId) {
       if (todoObj?.content !== "" && todoObj?.content.length < 25) {
         if (err) {
           setErr("");
         }
-        const res = AddTodo(email, todoObj);
+        const res = AddTodo(userId, todoObj);
 
         toast.promise(res, {
           loading: "Loading...",
@@ -66,14 +65,14 @@ const Form = () => {
   };
 
   const updateTodoFn = async () => {
-    const email = session?.user?.email;
+    const userId = session?.user?.userId;
 
-    if (email) {
+    if (userId) {
       if (todo !== "" && todo.length < 25) {
         if (err) {
           setErr("");
         }
-        const res = updateTodo(email, todoId, todo);
+        const res = updateTodo(userId, todoId, todo);
 
         toast.promise(res, {
           loading: "Loading...",

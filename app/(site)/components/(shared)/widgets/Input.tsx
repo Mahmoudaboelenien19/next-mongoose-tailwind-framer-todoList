@@ -1,18 +1,16 @@
 "use client";
-import React from "react";
-import { useFormContext, FieldErrors } from "react-hook-form";
+import React, { InputHTMLAttributes } from "react";
+import { useFormContext } from "react-hook-form";
 import { IconType } from "react-icons";
 import ErrorInput from "./ErrorInput";
 
 type Props = {
   Icon: IconType;
-  type: string;
-  placeholder: string;
-  name: string;
-};
+} & InputHTMLAttributes<HTMLInputElement>;
 
-const Input = ({ name, Icon, type, placeholder }: Props) => {
+const Input = ({ Icon, name = "", type, ...props }: Props) => {
   const [isIconClicked, setIsIconClicked] = React.useState(false);
+  ``;
   const {
     register,
     formState: { errors },
@@ -29,8 +27,8 @@ const Input = ({ name, Icon, type, placeholder }: Props) => {
   return (
     <div className="relative ">
       <input
+        {...props}
         {...register(name)}
-        placeholder={placeholder}
         type={isIconClicked && type === "password" ? "text" : type}
         className="outline-0  border-body peer h-11 bg-transparent border focus:border-white/50  w-full flex justify-center items-center gap-8 text-white/60  p-2 rounded text-sm"
       />

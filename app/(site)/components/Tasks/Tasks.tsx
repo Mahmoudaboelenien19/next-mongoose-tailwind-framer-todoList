@@ -2,17 +2,20 @@ import React from "react";
 import Task from "./Task";
 import { getAllTodos } from "@/lib/todos/getAllTodos";
 import { TodoType } from "@/lib/types/todo";
-import FramerWrapperFadeIn from "../nav/(shared)/animations/framerWrapperFadeIn";
 import { getServerSession } from "next-auth";
+import FramerWrapperFadeIn from "../(shared)/animations/framerWrapperFadeIn";
+import { authOptions } from "@/lib/auth/AuthOptions";
 
 const Tasks = async () => {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
-  const promise = await getAllTodos(session?.user?.email || "");
+  const userId = session?.user?.userId || "";
+  const promise = await getAllTodos(userId);
+  console.log({ userId });
 
   const res = await promise?.json();
 
-  const todos = res?.todos[0]?.todos;
+  const todos = res?.todos?.todos;
 
   return (
     <div className=" mx-auto flex flex-col gap-4">

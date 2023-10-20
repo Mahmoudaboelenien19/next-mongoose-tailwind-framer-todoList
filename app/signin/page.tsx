@@ -7,14 +7,15 @@ import Link from "next/link";
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { sungInSchema } from "@/lib/yup/signinSchema";
-import Input from "../(site)/components/nav/(shared)/widgets/Input";
 import GoogleLoginButton from "./components/GoogleButton";
-import Container from "../(site)/components/nav/(shared)/widgets/Container";
-import HomeLink from "../(site)/components/nav/(shared)/widgets/HomeLink";
+import Container from "../(site)/components/(shared)/widgets/Container";
+import HomeLink from "../(site)/components/(shared)/widgets/HomeLink";
+import Input from "../(site)/components/(shared)/widgets/Input";
 
 const Form = () => {
   const search = useSearchParams();
   const callbackUrl = search.get("callbackUrl") || "/";
+  const email = search.get("email") || "";
   const { data: session } = useSession();
   //not to open signin page if user authenticated
   if (session) {
@@ -62,6 +63,7 @@ const Form = () => {
             placeholder="Email"
             type="email"
             name="email"
+            defaultValue={email}
           />
           <Input
             Icon={HiFingerPrint}

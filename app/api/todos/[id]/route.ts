@@ -4,15 +4,15 @@ import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 type Props = {
   params: {
-    email: string;
+    id: string;
   };
 };
 
 (async () => await connectToMongoose())();
 
-export const GET = async (_: unknown, { params: { email } }: Props) => {
-  const todos = await userCollection.find({ email }, { todos: 1 });
-
+export const GET = async (_: unknown, { params: { id } }: Props) => {
+  const todos = await userCollection.findById(id, { todos: 1 });
+  console.log(todos);
   return NextResponse.json(
     {
       todos,
@@ -21,18 +21,12 @@ export const GET = async (_: unknown, { params: { email } }: Props) => {
   );
 };
 
-export const DELETE = async (
-  req: NextRequest,
-  { params: { email } }: Props
-) => {
+export const DELETE = async (req: NextRequest, { params: { id } }: Props) => {
   const { searchParams } = req.nextUrl;
   const todoId = searchParams.get("todoId");
-  await userCollection.updateOne(
-    { email },
-    {
-      $pull: { todos: { _id: todoId } },
-    }
-  );
+  await userCollection.findByIdAndUpdate(id, {
+    $pull: { todos: { _id: todoId } },
+  });
   return NextResponse.json(
     {
       msg: "Todo deleted successfully",
@@ -41,14 +35,11 @@ export const DELETE = async (
   );
 };
 
-export const POST = async (req: NextRequest, { params: { email } }: Props) => {
+export const POST = async (req: NextRequest, { params: { id } }: Props) => {
   const newTodo = await req.json();
-  const todos = await userCollection.updateOne(
-    { email },
-    {
-      $push: { todos: newTodo },
-    }
-  );
+  const todos = await userCollection.findByIdAndUpdate(id, {
+    $push: { todos: newTodo },
+  });
 
   return NextResponse.json({
     todos,
@@ -56,16 +47,16 @@ export const POST = async (req: NextRequest, { params: { email } }: Props) => {
   });
 };
 
-export const PATCH = async (req: NextRequest, { params: { email } }: Props) => {
+export const PATCH = async (req: NextRequest, { params: { id } }: Props) => {
   try {
     const { isChecked, content } = await req.json();
     const { searchParams } = req.nextUrl;
     const todoId = searchParams.get("todoId");
     const type = searchParams.get("type");
-    console.log({ todoId, type, content });
+
     if (type === "update") {
       await userCollection.updateOne(
-        { email, "todos._id": new ObjectId(todoId as string) },
+        { _id: new ObjectId(id), "todos._id": new ObjectId(todoId as string) },
         {
           $set: { "todos.$.content": content, "todos.$.isChecked": false },
         }
@@ -79,7 +70,7 @@ export const PATCH = async (req: NextRequest, { params: { email } }: Props) => {
       );
     } else {
       await userCollection.updateOne(
-        { email, "todos._id": new ObjectId(todoId as string) },
+        { _id: new ObjectId(id), "todos._id": new ObjectId(todoId as string) },
         {
           $set: { "todos.$.isChecked": isChecked },
         }
