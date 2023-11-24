@@ -1,7 +1,7 @@
 import { TodoType } from "@/lib/types/todo";
 import React, { Fragment } from "react";
 import Buttons from "./Buttons";
-import FramerChecked from "../(shared)/animations/FramerChecked";
+import FramerChecked from "../../../components/(shared)/animations/FramerChecked";
 
 type Props = {
   i: number;

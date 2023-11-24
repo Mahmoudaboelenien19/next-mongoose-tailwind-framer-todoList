@@ -3,3 +3,8 @@ export type TodoType = {
   content: string;
   isChecked: boolean;
 };
+
+export type DataResponse = {
+  msg: string;
+  status: number;
+};

@@ -16,7 +16,6 @@ export const POST = async (req: NextRequest) => {
       );
     }
     const hashedPassword = hashPassword(password);
-    console.log({ email, hashedPassword, name });
     const res = await userCollection.insertMany([
       {
         name,

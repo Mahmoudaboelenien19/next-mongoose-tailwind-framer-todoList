@@ -7,3 +7,27 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tasks {
+  scrollbar-gutter: stable;
+}
+::-webkit-scrollbar-track {
+  background: #10303c;
+  border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(238, 125, 119, 0.7);
+
+  border-radius: 100vw;
+  border: 1.5px solid #10303c;
+  transition: 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(238, 125, 119);
+}

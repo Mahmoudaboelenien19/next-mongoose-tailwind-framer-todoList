@@ -1,18 +1,23 @@
 "use client";
 import React from "react";
-
+import { motion } from "framer-motion";
 import { RotatingLines } from "react-loader-spinner";
-const FetchLoading = () => {
+type Props = { width?: string; initialX?: number };
+const FetchLoading = ({ width = "35", initialX }: Props) => {
   return (
-    <div className="mt-16 w-full h-64 flex items-center justify-center relative z-10">
+    <motion.div
+      className="m-auto"
+      initial={{ x: initialX || 0 }}
+      animate={{ x: 0 }}
+    >
       <RotatingLines
         strokeColor="grey"
         strokeWidth="5"
         animationDuration="0.75"
-        width="35"
+        width={width}
         visible={true}
       />
-    </div>
+    </motion.div>
   );
 };
 

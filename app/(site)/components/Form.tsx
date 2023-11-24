@@ -1,13 +1,14 @@
 "use client";
 import AddTodo from "@/lib/todos/AddTodo";
 import updateTodo from "@/lib/todos/updateTodo";
-import { TodoType } from "@/lib/types/todo";
+import { DataResponse, TodoType } from "@/lib/types/todo";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { toast } from "sonner";
 import ErrorInput from "./(shared)/widgets/ErrorInput";
+import MainBtn from "./(shared)/MainBtn";
 
 const Form = () => {
   const [err, setErr] = useState("");
@@ -53,6 +54,7 @@ const Form = () => {
           },
           error: "Error",
         });
+
         router.refresh();
       } else if (todoObj?.content.length >= 25) {
         setErr("you can't exceed 24 letter.");
@@ -72,11 +74,11 @@ const Form = () => {
         if (err) {
           setErr("");
         }
-        const res = updateTodo(userId, todoId, todo);
+        const res: Promise<DataResponse> = updateTodo(userId, todoId, todo);
 
         toast.promise(res, {
           loading: "Loading...",
-          success: (data: { msg: string }) => {
+          success: (data) => {
             formRef.current?.reset();
             router.push("/");
             setTodo("");
@@ -112,13 +114,12 @@ const Form = () => {
         placeholder="What needs to be done "
         className="border-0 outline-none h-full pl-2 rounded-l w-[80%]"
       />
-      <button
-        className="bg-body border-0 rounded-r text-white w-1/5 flex gap-1 justify-center items-center font-medium p-2"
+      <MainBtn
+        className=" w-1/5 bg-body  rounded-r"
         onClick={updateVal ? updateTodoFn : addToDoFn}
-      >
-        <span>{updateVal?.length >= 1 ? "Update" : "Add"}</span>{" "}
-        <FiArrowUpRight />
-      </button>
+        btn={updateVal?.length >= 1 ? "Update" : "Add"}
+        Icon={FiArrowUpRight}
+      />
     </form>
   );
 };

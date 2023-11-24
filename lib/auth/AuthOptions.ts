@@ -6,6 +6,10 @@ import { NextAuthOptions, Session } from "next-auth";
 import { Adapter } from "next-auth/adapters";
 import clientPromise from "../mongoose/mongoAdapter";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { connectToMongoose } from "../mongoose/ConnectToMongoose";
+import { NextResponse } from "next/server";
+
+(async () => await connectToMongoose())();
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -21,17 +25,17 @@ export const authOptions: NextAuthOptions = {
         if (!credentials || !credentials?.email || !credentials?.password) {
           return null;
         }
-
         const user = await userCollection.findOne({ email: credentials.email });
+
         if (user) {
           const check = bcyrpt.compareSync(
             credentials.password + process.env.BCYRPT_SECRET,
             user.password
           );
-
           if (check) {
             return user;
           }
+
           return null;
         }
 
@@ -54,34 +58,47 @@ export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise) as Adapter,
 
   callbacks: {
-    // async signIn({ account, profile, credentials }) {
-    //   if (account && profile && account.provider === "google") {
-    //     const user = await userCollection.findOne({ email: profile.email });
-    //     console.log({ profile });
-    //     if (user) {
-    //       return user;
-    //     }
-    //     return "/signin?isRegistered=false";
-    //   }
+    // async signIn(ob: any) {
+    //   // { account, profile, credentials }
+    //   console.log({ signin: ob });
+    //   // if (account && profile && account.provider === "google") {
+    //   //   const user = await userCollection.findOne({ email: profile.email });
+    //   //   console.log({ profile });
+    //   //   if (user) {
+    //   //     return user;
+    //   //   }
+    //   //   return "/signin?isRegistered=false";
+    //   // }
 
-    //   if (credentials && credentials.email) {
-    //     const user = await userCollection.findOne({ email: credentials.email });
+    //   // if (credentials && credentials.email) {
+    //   //   const user = await userCollection.findOne({ email: credentials.email });
 
-    //     if (user) {
-    //       return user;
-    //     }
+    //   //   if (user) {
+    //   //     return user;
+    //   //   }
+    //   // }
+    //   if (ob?.user) {
+    //     return "/";
+    //   } else {
+    //     return false;
     //   }
-    //   return "/signin?isRegistered=false";
     // },
-    async session({ session }) {
-      const user = await userCollection.findOne({
-        email: session?.user?.email,
-      });
-      if (user) {
-        session.user.userId = user._id.toString();
-      }
 
-      return await Promise.resolve(session);
+    async jwt({ token, user }) {
+      if (user && token) {
+        return {
+          ...token,
+          id: user.id,
+        };
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.userId = token.id as string;
+        return session;
+      }
+      return session;
     },
   },
 };

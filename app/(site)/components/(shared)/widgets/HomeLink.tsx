@@ -1,16 +1,23 @@
 import Link from "next/link";
 import React from "react";
 import { AiOutlineLeft } from "react-icons/ai";
+import FramerWrapperFadeIn from "../animations/framerWrapperFadeIn";
 
 const HomeLink = () => {
   return (
-    <Link
-      href={"/"}
-      className=" absolute -top-10  left-0 lg:-left-5 text-white/60                                0 flex gap-2 justify-center items-center"
+    <FramerWrapperFadeIn
+      _id="home_link"
+      delay={1}
+      className="absolute -top-8  left-0"
     >
-      <AiOutlineLeft />
-      <span>Home</span>
-    </Link>
+      <Link
+        href={"/"}
+        className="   lg:-left-5 text-white/60 font-semibold flex gap-2 justify-center items-center text-sm"
+      >
+        <AiOutlineLeft />
+        <span>Home</span>
+      </Link>
+    </FramerWrapperFadeIn>
   );
 };
 

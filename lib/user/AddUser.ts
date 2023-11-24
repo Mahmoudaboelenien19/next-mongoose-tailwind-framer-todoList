@@ -7,8 +7,8 @@ export const AddUser = async (user: UserType) => {
     method: "POST",
     body: JSON.stringify(user),
   });
-  const st = res.status;
+  const status = res.status;
   if (!res.ok) return;
   const data = await res.json();
-  return { msg: data.msg, st };
+  return { msg: data.msg, status };
 };

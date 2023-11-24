@@ -1,22 +1,25 @@
 "use client";
 import deleteTodo from "@/lib/todos/deleteToDo";
 import toggleCheck from "@/lib/todos/toggleCheck";
+import { DataResponse } from "@/lib/types/todo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { AiFillDelete, AiFillCheckCircle } from "react-icons/ai";
 import { HiPencilAlt } from "react-icons/hi";
 import { toast } from "sonner";
-
 type Props = { _id: string; isChecked: boolean; content: string };
 const Buttons = ({ _id, isChecked, content }: Props) => {
   const router = useRouter();
 
   const { data: session } = useSession();
   const handleDelete = async () => {
-    const res = deleteTodo(session?.user?.userId || "", _id);
+    const res: Promise<DataResponse> = deleteTodo(
+      session?.user?.userId || "",
+      _id
+    );
     toast.promise(res, {
       loading: "Loading...",
-      success: (data: { msg: string }) => {
+      success: (data) => {
         return `${data.msg} `;
       },
       error: "Error",
@@ -25,10 +28,14 @@ const Buttons = ({ _id, isChecked, content }: Props) => {
   };
 
   const handleCheck = async () => {
-    const res = toggleCheck(session?.user?.userId || "", _id, !isChecked);
+    const res: Promise<DataResponse> = toggleCheck(
+      session?.user?.userId || "",
+      _id,
+      !isChecked
+    );
     toast.promise(res, {
       loading: "Loading...",
-      success: (data: { msg: string }) => {
+      success: (data) => {
         return `${data.msg} `;
       },
       error: "Error",

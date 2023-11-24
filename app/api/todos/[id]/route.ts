@@ -1,6 +1,8 @@
 import { connectToMongoose } from "@/lib/mongoose/ConnectToMongoose";
 import { userCollection } from "@/lib/mongoose/usersSchema";
 import { ObjectId } from "mongodb";
+
+
 import { NextRequest, NextResponse } from "next/server";
 type Props = {
   params: {
@@ -10,12 +12,37 @@ type Props = {
 
 (async () => await connectToMongoose())();
 
-export const GET = async (_: unknown, { params: { id } }: Props) => {
-  const todos = await userCollection.findById(id, { todos: 1 });
-  console.log(todos);
+export const GET = async (req: NextRequest, { params: { id } }: Props) => {
+  const data = await userCollection.aggregate([
+    {
+      $match: {
+        _id: new ObjectId(id),
+      },
+    },
+    {
+      $project: {
+        todos: 1,
+      },
+    },
+    {
+      $unwind: "$todos",
+    },
+    {
+      $sort: {
+        "todos.createdAt": -1,
+      },
+    },
+    {
+      $group: {
+        _id: 0,
+        todos: { $push: "$todos" },
+      },
+    },
+  ]);
+
   return NextResponse.json(
     {
-      todos,
+      todos: data[0].todos,
     },
     { status: 200 }
   );
@@ -27,6 +54,7 @@ export const DELETE = async (req: NextRequest, { params: { id } }: Props) => {
   await userCollection.findByIdAndUpdate(id, {
     $pull: { todos: { _id: todoId } },
   });
+
   return NextResponse.json(
     {
       msg: "Todo deleted successfully",
